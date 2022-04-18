@@ -1,0 +1,8 @@
+.bin
+.img
+.exe
+.txt
+.vscode/
+.code/
+.DS_Store/
+.imap
