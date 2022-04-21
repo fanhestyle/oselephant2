@@ -1,40 +1,58 @@
 .code32
 
+//统一处理中断压入错误代码和不压入错误代码的情况
 .macro ERROR_CODE
     nop
 .endm
 
 .macro ZERO
-    push 0
+    push $0
 .endm
 
-.extern put_str
-
+//引入C语言中定义的中断相应数组(其实GNU as可以不写这一行)
+.extern idt_table
 .section .data
-intr_str:
-    .asciz "interrupt occur!\n"
-
 .globl intr_entry_table
 intr_entry_table:
 
+//定义宏
 .macro VECTOR idx, err_code
 .section .text
 intr\idx\()entry:
     \err_code
-    push $intr_str
-    call put_str
-    addl $4, %esp
+
+    //准备调用C语言编写的相应函数
+    push %ds
+    push %es
+    push %fs
+    push %gs
+    pushal
 
     //如果是从片上进入的中断,除了往从片上发送EOI外,还要往主片上发送EOI 
     movb $0x20, %al
     outb %al, $0xa0
     outb %al, $0x20
 
-    addl $4, %esp
-    iret
+    push $\idx
+    //间接绝对近转移
+    calll *idt_table + \idx * 4
+    jmp intr_exit
+    
 .section .data
     .long intr\idx\()entry
 .endm
+
+.section .text
+.globl intr_exit
+intr_exit:
+    addl $4, %esp
+    popal
+    pop %gs
+    pop %fs
+    pop %es
+    pop %ds
+    addl $4, %esp
+    iretl
 
 VECTOR 0x00,ZERO
 VECTOR 0x01,ZERO
