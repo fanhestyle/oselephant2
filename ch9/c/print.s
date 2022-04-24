@@ -218,3 +218,26 @@ put_int.put_each_num:
     jl put_int.put_each_num
     popal
     ret
+
+
+.globl set_cursor
+.type set_cursor, @function
+set_cursor:
+    pushal
+    movw 36(%esp), %bx
+    movw $0x03d4, %dx
+    movb $0x0e, %al
+    outb %al, %dx
+    movw $0x03d5, %dx
+    movb %bh, %al
+    outb %al, %dx
+
+    movw $0x03d4, %dx
+    movb $0x0f, %al
+    outb %al, %dx
+    movw $0x03d5, %dx
+    movb %bl, %al
+    outb %al, %dx
+    popal
+
+    ret

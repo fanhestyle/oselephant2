@@ -13,7 +13,8 @@ kernel.bin: main.o \
 	bitmap.o \
 	memory.o \
 	thread.o \
-	list.o
+	list.o \
+	switch.o
 
 	@ld $^ $(LDFLAGS) kernel.lds -e main -o $@
 
