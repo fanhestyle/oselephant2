@@ -2,7 +2,7 @@ LDFLAGS+=-m elf_i386 -T
 ASFLAGS+=--32 -o
 CFLAGS+=-m32 -fno-builtin -W -Wstrict-prototypes -Wmissing-prototypes  -fno-stack-protector -c -o
 
-kernel.bin: main.o \
+OBJS +=  main.o \
 	print.o \
 	interrupt.o \
 	init.o \
@@ -22,6 +22,7 @@ kernel.bin: main.o \
 	tss.o \
 	process.o
 
+kernel.bin: $(OBJS)
 	@ld $^ $(LDFLAGS) kernel.lds -e main -o $@
 
 %.o: %.c
@@ -29,7 +30,6 @@ kernel.bin: main.o \
 
 %.o: %.s
 	@as $(ASFLAGS) $@ $^
-
 
 .PHONY:run,clean,boot,disk
 
@@ -51,42 +51,25 @@ disk:
 clean:
 	@$(RM) -r *.txt *.o *.bin hd60M.img
 
-generate:
-	@$(CC) $(CFLAGS) tss.c -o tss.o	
-	@$(CC) $(CFLAGS) tss.c -o tss.o		
-	@$(CC) $(CFLAGS) tss.c -o tss.o	
-	@$(CC) $(CFLAGS) tss.c -o tss.o	
-	@$(CC) $(CFLAGS) tss.c -o tss.o	
-	@$(CC) $(CFLAGS) tss.c -o tss.o	
-	@$(CC) $(CFLAGS) tss.c -o tss.o	
-	@$(CC) $(CFLAGS) tss.c -o tss.o	
-	@$(CC) $(CFLAGS) tss.c -o tss.o	
-	@$(CC) $(CFLAGS) tss.c -o tss.o	
-	@$(CC) $(CFLAGS) tss.c -o tss.o	
-	@$(CC) $(CFLAGS) tss.c -o tss.o	
-	@$(CC) $(CFLAGS) tss.c -o tss.o	
-
-target:
-	@ld  main.o \
-	print.o \
-	interrupt.o \
-	init.o \
-	kernel.o \
-	timer.o \
-	debug.o \
-	string.o \
-	bitmap.o \
-	memory.o \
-	thread.o \
-	list.o \
-	switch.o \
-	sync.o \
-	console.o \
-	keyboard.o \
-	ioqueue.o \
-	tss.o \
-	process.o \
-	$(LDFLAGS) kernel.lds -e main -o kernel.bin
-
 test:
-	make && make target && make boot && make disk && bochs
+# @$(CC) $(CFLAGS) bitmap.o bitmap.c 
+# @$(CC) $(CFLAGS) console.o console.c
+# @$(CC) $(CFLAGS) debug.o debug.c
+# @$(CC) $(CFLAGS) init.o init.c
+# @$(CC) $(CFLAGS) interrupt.o interrupt.c
+# @$(CC) $(CFLAGS) ioqueue.o ioqueue.c
+# @$(CC) $(CFLAGS) keyboard.o keyboard.c
+# @$(CC) $(CFLAGS) list.o list.c
+# @$(CC) $(CFLAGS) main.o main.c
+# @$(CC) $(CFLAGS) memory.o memory.c
+# @$(CC) $(CFLAGS) process.o process.c
+# @$(CC) $(CFLAGS) string.o string.c
+# @$(CC) $(CFLAGS) sync.o sync.c
+# @$(CC) $(CFLAGS) thread.o thread.c
+# @$(CC) $(CFLAGS) timer.o timer.c
+# @$(CC) $(CFLAGS) tss.o tss.c
+# @as $(ASFLAGS) kernel.o kernel.s
+# @as $(ASFLAGS) print.o print.s
+# @as $(ASFLAGS) switch.o switch.s
+	@ld $(OBJS) $(LDFLAGS) kernel.lds -e main -o kernel.bin
+	make boot && make disk && bochs
