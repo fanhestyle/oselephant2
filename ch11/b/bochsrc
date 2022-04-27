@@ -31,5 +31,3 @@ ata0-master: type=disk, path="hd60M.img", mode=flat, cylinders=121, heads=16, sp
 # 如果编译bochs的时候带了-gdbstub选项才能开启，这样就可以使用gdb联合bochs调试
 # 在bochs中支持2种调试方式：(1)bochs自己带的调试器 (2)gdb远程调试bochs
 #gdbstub: enabled=1, port=1234, text_base=0, data_base=0, bss_base=0
-#
- display_library: x, options="gui_debug" 
